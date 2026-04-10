@@ -4,6 +4,8 @@ import cors from "cors"; // pour autoriser les requêtes cross-origin (entre dif
 import dotenv from "dotenv"; // pour lire fichier .env
 import db from "./db.js"; // initialiser la base de données
 import bcrypt from "bcrypt"; // pour hasher les mots de passe
+import jwt from "jsonwebtoken"; // pour créer et vérifier les tokens d'authentification
+import { authMiddleware } from "./middlewares/auth.js"; // middleware pour protéger les routes nécessitant une authentification
 
 dotenv.config(); // charger les variables d'environnement depuis le fichier .env
 
@@ -55,9 +57,19 @@ app.post("/login", async (req, res) => {
 
       if (!match) return res.status(401).json({ error: "Mot de passe incorrect" });
 
-      res.json({ message: "Connexion réussie", userId: user.id });
+      const token = jwt.sign({ userId: user.id}, process.env.JWT_SECRET, { expiresIn: "24h" });
+
+      res.json({ message: "Connexion réussie", token });
     }
   );
+});
+
+// route protégée pour tester l'authentification
+app.get("/me", authMiddleware, (req, res) => {
+  res.json({
+    message: "Accès autorisé",
+    user: req.user
+  });
 });
 
 const PORT = process.env.PORT || 3000;
