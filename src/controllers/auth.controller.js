@@ -2,7 +2,7 @@ import db from "../models/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-
+// créer un utilisateur
 export const register = async (req, res) => {
     const { username, password } = req.body;
 
@@ -26,7 +26,7 @@ export const register = async (req, res) => {
     });
 };
 
-
+// connecter un utilisateur
 export const login = async (req, res) => {
     const { username, password } = req.body;
 

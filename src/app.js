@@ -3,7 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.routes.js";
-import { authMiddleware } from "./middlewares/auth.middleware.js";
+import userRoutes from "./routes/users.routes.js";
+import bookRoutes from "./routes/books.routes.js";
 
 dotenv.config();
 
@@ -18,11 +19,8 @@ app.get("/", (req, res) => {
 
 app.use("/auth", authRoutes);
 
-app.get("/me", authMiddleware, (req, res) => {
-  res.json({
-    message: "Accès autorisé",
-    user: req.user,
-  });
-});
+app.use("/users", userRoutes);
+
+app.use("/books", bookRoutes);
 
 export default app;
