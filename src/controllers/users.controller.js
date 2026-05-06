@@ -67,3 +67,32 @@ export const addBookToMyLibrary = (req, res) => {
     );
   });
 };
+
+// Voir mes livres
+export const getMyLibrary = (req, res) => {
+  const userId = req.user.userId;
+
+  const query = `
+    SELECT
+      books.id,
+      books.title,
+      books.author,
+      books.type,
+      books.genre,
+      user_books.status,
+      user_books.recommendation,
+      user_books.comment
+    FROM user_books
+    JOIN books ON user_books.book_id = books.id
+    WHERE user_books.user_id = ?
+    ORDER BY user_books.id DESC
+  `;
+
+  db.all(query, [userId], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: "Erreur serveur" });
+    }
+
+    res.json(rows);
+  });
+};
