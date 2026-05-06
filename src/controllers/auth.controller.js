@@ -50,12 +50,24 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   const { username, password } = req.body;
 
+  const cleanUsername = username?.trim();
+
+  if (!cleanUsername || !password) {
+    return res.status(400).json({ error: "Champ requis" });
+  }
+
+  if (/\s/.test(cleanUsername)) {
+    return res
+      .status(400)
+      .json({ error: "Le nom d'utilisateur ne doit pas contenir d'espace" });
+  }
+
   db.get(
     `SELECT * FROM users WHERE username = ?`,
-    [username],
+    [cleanUsername],
     async (err, user) => {
       if (err) {
-        return res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: "Erreur serveur" });
       }
 
       if (!user) return res.status(404).json({ error: "Introuvable" });
