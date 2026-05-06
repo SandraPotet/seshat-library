@@ -1,9 +1,10 @@
-import exress from "express";
+import express from "express";
 import { createBook, getAllBooks } from "../controllers/books.controller.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
 
-const router = exress.Router();
+const router = express.Router();
 
-router.post("/", createBook);
+router.post("/", authMiddleware, createBook);
 router.get("/", getAllBooks);
 
 export default router;
