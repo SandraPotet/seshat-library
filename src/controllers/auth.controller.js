@@ -30,7 +30,13 @@ export const register = async (req, res) => {
 
   db.run(query, [cleanUsername, hashedPassword], function (err) {
     if (err) {
-      return res.status(500).json({ error: err.message });
+      if (err.message.includes("UNIQUE constraint failed")) {
+        return res
+          .status(409)
+          .json({ error: "Ce nom d'utilisateur est déjà utilisé" });
+      }
+
+      return res.status(500).json({ error: "Erreur serveur" });
     }
 
     res.status(201).json({
