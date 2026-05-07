@@ -383,3 +383,61 @@ GET http://localhost:3000/users/me/books
 ```
 
 Check that the updated fields are visible in the library response.
+
+---
+
+## DELETE /users/me/books/:bookId
+
+**Purpose:** Remove a book from the current user's library.
+
+This route removes only the relation in `user_books`. It does not delete the book from the global `books` catalog.
+
+**Prerequisites:**
+
+- User must be logged in.
+- Book must exist in the catalog.
+- Book must already be in the user's library.
+
+**Method:** `DELETE`  
+**URL:** `http://localhost:3000/users/me/books/BOOK_ID`  
+**Headers:** `Authorization: Bearer TOKEN`
+
+**Body:** none
+
+**Success:**
+
+- Status: `200 OK`
+
+**Expected response:**
+
+```json
+{
+  "message": "Livre retire de votre bibliotheque"
+}
+```
+
+### Tests
+
+- [x] Valid delete -> `200 OK`
+- [x] Without token -> `401 Token manquant`
+- [x] Invalid bookId, example `abc` -> `400 Identifiant du livre invalide`
+- [x] Book not in my library -> `404 Ce livre n'est pas dans votre bibliotheque`
+- [x] Delete the same book twice -> `404 Ce livre n'est pas dans votre bibliotheque`
+
+### Verification
+
+After a successful `DELETE`, call:
+
+```txt
+GET http://localhost:3000/users/me/books
+```
+
+Check that the removed book is no longer visible in the user's library.
+
+Then call:
+
+```txt
+GET http://localhost:3000/books
+```
+
+Check that the book still exists in the global catalog.

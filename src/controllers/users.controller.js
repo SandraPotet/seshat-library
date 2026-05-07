@@ -179,3 +179,33 @@ export const updateBookInMyLibrary = (req, res) => {
     },
   );
 };
+
+// Retirer un livre de ma bibliotheque
+export const removeBookFromMyLibrary = (req, res) => {
+  const userId = req.user.userId;
+  const bookId = Number(req.params.bookId);
+
+  if (!Number.isInteger(bookId) || bookId <= 0) {
+    return res.status(400).json({ error: "Identifiant du livre invalide" });
+  }
+
+  db.run(
+    `DELETE FROM user_books WHERE user_id = ? AND book_id = ?`,
+    [userId, bookId],
+    function (err) {
+      if (err) {
+        return res.status(500).json({ error: "Erreur serveur" });
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).json({
+          error: "Ce livre n'est pas dans votre bibliotheque",
+        });
+      }
+
+      return res.status(200).json({
+        message: "Livre retire de votre bibliotheque",
+      });
+    },
+  );
+};
