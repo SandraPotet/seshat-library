@@ -1,0 +1,385 @@
+# Seshat Library - API Tests
+
+## Base URL
+
+`http://localhost:3000`
+
+## Notes Thunder Client
+
+- La methode HTTP se choisit dans le menu : `GET`, `POST`, `PATCH`, etc.
+- L'URL ne doit pas contenir la methode.
+- Pour envoyer du JSON : `Body > JSON`
+- Pour les routes protegees, ajouter le header :
+
+```txt
+Authorization: Bearer TOKEN
+```
+
+Ne pas mettre le token entre guillemets.
+
+---
+
+# 1. App
+
+## GET /
+
+**Method:** `GET`  
+**URL:** `http://localhost:3000/`
+
+**Expected status:** `200 OK`
+
+**Expected response:**
+
+```txt
+Seshat API is running
+```
+
+---
+
+# 2. Auth
+
+## POST /auth/register
+
+**Purpose:** Create a new user account.
+
+**Method:** `POST`  
+**URL:** `http://localhost:3000/auth/register`  
+**Headers:** `Content-Type: application/json`
+
+**Body:**
+
+```json
+{
+  "username": "testX",
+  "password": "monmotdepasse"
+}
+```
+
+**Success:**
+
+- Status: `201 Created`
+- Response: user created + `userId`
+
+### Register Tests
+
+- [x] Valid register -> `201 Created`
+- [x] Username already used -> `409 Ce nom d'utilisateur est deja utilise`
+- [x] Missing username -> `400 Champ requis`
+- [x] Missing password -> `400 Champ requis`
+- [x] Empty username or only spaces -> `400 Champ requis`
+- [x] Password too short -> `400 Le mot de passe doit contenir au moins 8 caracteres`
+- [x] Username with spaces inside -> `400 Le nom d'utilisateur ne doit pas contenir d'espace`
+
+---
+
+## POST /auth/login
+
+**Purpose:** Log in and receive a JWT token.
+
+**Method:** `POST`  
+**URL:** `http://localhost:3000/auth/login`  
+**Headers:** `Content-Type: application/json`
+
+**Body:**
+
+```json
+{
+  "username": "testX",
+  "password": "monmotdepasse"
+}
+```
+
+**Success:**
+
+- Status: `200 OK`
+- Response: login message + JWT token
+
+### Login Tests
+
+- [x] Valid login -> `200 OK` + token
+- [x] Wrong password -> `401 Mot de passe incorrect`
+- [x] Unknown user -> `404 Introuvable`
+- [x] Username with spaces around -> `200 OK` + token
+- [x] Missing username -> `400 Champ requis`
+- [x] Missing password -> `400 Champ requis`
+- [x] Empty username or only spaces -> `400 Champ requis`
+- [x] Username with spaces inside -> `400 Le nom d'utilisateur ne doit pas contenir d'espace`
+
+---
+
+# 3. JWT Middleware
+
+Used on protected routes.
+
+## Protected Route Example
+
+**Method:** `GET`  
+**URL:** `http://localhost:3000/users/me`
+
+### JWT Tests
+
+- [x] No `Authorization` header -> `401 Token manquant`
+- [x] Malformed header: `Authorization: abc123` -> `401 Format du token invalide`
+- [x] Wrong token format but with Bearer: `Authorization: Bearer abc123` -> `403 Token invalide`
+- [x] Valid token: `Authorization: Bearer TOKEN` -> `200 OK`
+
+---
+
+# 4. Users
+
+## GET /users/me
+
+**Purpose:** Return the current authenticated user's profile.
+
+**Method:** `GET`  
+**URL:** `http://localhost:3000/users/me`  
+**Headers:** `Authorization: Bearer TOKEN`
+
+**Success:**
+
+- Status: `200 OK`
+
+**Expected response:**
+
+```json
+{
+  "id": 1,
+  "username": "testX"
+}
+```
+
+### Tests
+
+- [x] Without token -> `401 Token manquant`
+- [x] Invalid token -> `403 Token invalide`
+- [x] Valid token -> `200 OK` + current user profile
+- [x] Response must not include password
+
+---
+
+# 5. Books
+
+## POST /books
+
+**Purpose:** Add a book to the global catalog.
+
+**Method:** `POST`  
+**URL:** `http://localhost:3000/books`
+
+**Headers:**
+
+```txt
+Authorization: Bearer TOKEN
+Content-Type: application/json
+```
+
+**Body:**
+
+```json
+{
+  "title": "Harry Potter a l'ecole des sorciers",
+  "author": "J.K Rowling",
+  "type": "roman",
+  "genre": "fantasy"
+}
+```
+
+**Success:**
+
+- Status: `201 Created`
+- Response: created book with `id`
+
+### Tests
+
+- [x] Valid book with token -> `201 Created`
+- [x] Without token -> `401 Token manquant`
+- [x] Missing title -> `400 Title and author are required`
+- [x] Missing author -> `400 Title and author are required`
+
+---
+
+## GET /books
+
+**Purpose:** Return all books from the global catalog.
+
+**Method:** `GET`  
+**URL:** `http://localhost:3000/books`
+
+**Success:**
+
+- Status: `200 OK`
+- Response: array of books
+
+**Expected response example:**
+
+```json
+[
+  {
+    "id": 1,
+    "title": "Harry Potter a l'ecole des sorciers",
+    "author": "J.K Rowling",
+    "type": "roman",
+    "genre": "fantasy"
+  }
+]
+```
+
+---
+
+# 6. User Library
+
+## POST /users/me/books
+
+**Purpose:** Add an existing book to the current user's library.
+
+**Prerequisites:**
+
+- User must be logged in.
+- A book must already exist in `books`.
+
+**Method:** `POST`  
+**URL:** `http://localhost:3000/users/me/books`  
+**Headers:** `Authorization: Bearer TOKEN`
+
+**Body:**
+
+```json
+{
+  "bookId": 1
+}
+```
+
+**Success:**
+
+- Status: `201 Created`
+
+**Expected response example:**
+
+```json
+{
+  "id": 1,
+  "userId": 1,
+  "bookId": 1,
+  "status": "to_read",
+  "recommendation": null,
+  "comment": null
+}
+```
+
+### Tests
+
+- [x] Valid bookId -> `201 Created`
+- [x] Without token -> `401 Token manquant`
+- [x] Missing bookId -> `400 Veuillez choisir un livre a ajouter a votre bibliotheque`
+- [x] Unknown bookId -> `404 Livre introuvable`
+- [x] Add same book twice -> `409 Ce livre est deja dans votre bibliotheque`
+
+---
+
+## GET /users/me/books
+
+**Purpose:** Return the current user's library.
+
+**Method:** `GET`  
+**URL:** `http://localhost:3000/users/me/books`  
+**Headers:** `Authorization: Bearer TOKEN`
+
+**Success:**
+
+- Status: `200 OK`
+- Response: array of books
+
+**Expected response example:**
+
+```json
+[
+  {
+    "id": 1,
+    "title": "Harry Potter a l'ecole des sorciers",
+    "author": "J.K Rowling",
+    "type": "roman",
+    "genre": "fantasy",
+    "status": "to_read",
+    "recommendation": null,
+    "comment": null
+  }
+]
+```
+
+### Tests
+
+- [x] Valid token with books -> `200 OK` + array of books
+- [x] Valid token with empty library -> `200 OK` + `[]`
+- [x] Without token -> `401 Token manquant`
+- [x] Invalid token -> `403 Token invalide`
+
+---
+
+## PATCH /users/me/books/:bookId
+
+**Purpose:** Update the current user's personal data for a book in their library.
+
+**Prerequisites:**
+
+- User must be logged in.
+- Book must exist in the catalog.
+- Book must already be in the user's library.
+
+**Method:** `PATCH`  
+**URL:** `http://localhost:3000/users/me/books/BOOK_ID`  
+**Headers:** `Authorization: Bearer TOKEN`
+
+**Possible body:**
+
+```json
+{
+  "status": "reading",
+  "recommendation": 0,
+  "comment": "J'ai beaucoup aime cette lecture."
+}
+```
+
+**Allowed values:**
+
+- `status`: `to_read`, `reading`, `read`
+- `recommendation`: `1`, `0`, `null`
+- `comment`: string or `null`
+
+**Success:**
+
+- Status: `200 OK`
+
+**Expected response:**
+
+```json
+{
+  "message": "Livre mis a jour dans votre bibliotheque"
+}
+```
+
+### Tests
+
+- [x] Valid status update -> `200 OK`
+- [x] Valid recommendation `1` -> `200 OK`
+- [x] Valid recommendation `0` -> `200 OK`
+- [x] Valid recommendation `null` -> `200 OK`
+- [x] Valid comment -> `200 OK`
+- [x] Comment `null` -> `200 OK`
+- [x] Multiple fields at once -> `200 OK`
+- [x] Without token -> `401 Token manquant`
+- [x] Invalid bookId, example `abc` -> `400 Identifiant du livre invalide`
+- [x] Book not in my library -> `404 Ce livre n'est pas dans votre bibliotheque`
+- [x] Empty body `{}` -> `400 Veuillez fournir au moins une information a modifier`
+- [x] Invalid status, example `finished` -> `400 Statut de lecture invalide`
+- [x] Invalid recommendation, example `4` -> `400 Recommendation invalide`
+- [x] Invalid comment, example `123` -> `400 Commentaire invalide`
+
+### Verification
+
+After a successful `PATCH`, call:
+
+```txt
+GET http://localhost:3000/users/me/books
+```
+
+Check that the updated fields are visible in the library response.
