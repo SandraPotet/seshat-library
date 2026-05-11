@@ -224,6 +224,49 @@ Content-Type: application/json
 ]
 ```
 
+## GET /books/:id
+
+**Purpose:** Return the public detail page for one book.
+
+**Method:** `GET`
+**URL:** `http://localhost:3000/books/BOOK_ID`
+
+**Headers:** none
+
+**Body:** none
+
+**Success:**
+
+- Status: `200 OK`
+- Response: book details, stats and comments
+
+**Expected response example:**
+
+````json
+{
+  "book": {
+    "id": 1,
+    "title": "Harry Potter a l'ecole des sorciers",
+    "author": "J.K Rowling",
+    "type": "roman",
+    "genre": "fantasy"
+  },
+  "stats": {
+    "recommended": 1,
+    "notRecommended": 0,
+    "totalRead": 1,
+    "totalInLibraries": 1
+  },
+  "comments": [
+    {
+      "username": "testX",
+      "status": "read",
+      "recommendation": 1,
+      "comment": "J'ai beaucoup aime cette lecture."
+    }
+  ]
+}
+
 ---
 
 # 6. User Library
@@ -237,8 +280,8 @@ Content-Type: application/json
 - User must be logged in.
 - A book must already exist in `books`.
 
-**Method:** `POST`  
-**URL:** `http://localhost:3000/users/me/books`  
+**Method:** `POST`
+**URL:** `http://localhost:3000/users/me/books`
 **Headers:** `Authorization: Bearer TOKEN`
 
 **Body:**
@@ -247,7 +290,7 @@ Content-Type: application/json
 {
   "bookId": 1
 }
-```
+````
 
 **Success:**
 
