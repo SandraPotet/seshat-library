@@ -157,13 +157,50 @@ Used on protected routes.
 
 ---
 
+## GET /users/:id
+
+**Purpose:** Return a public user profile.
+
+This route is public. It does not require a token.
+
+**Method:** `GET`  
+**URL:** `http://localhost:3000/users/USER_ID`  
+**Headers:** none  
+**Body:** none
+
+**Success:**
+
+- Status: `200 OK`
+- Response: public user information
+
+**Expected response example:**
+
+```json
+{
+  "id": 1,
+  "username": "test1"
+}
+```
+
+### Tests
+
+- [x] Existing user -> `200 OK` + public user profile
+- [x] Response does not include password
+- [x] Invalid userId, example `abc` -> `400 Identifiant utilisateur invalide`
+- [x] Invalid userId, example `0` -> `400 Identifiant utilisateur invalide`
+- [x] Invalid userId, example `-1` -> `400 Identifiant utilisateur invalide`
+- [x] Unknown userId, example `999999` -> `404 Utilisateur introuvable`
+- [x] Route without token -> `200 OK`
+
+````
+
 # 5. Books
 
 ## POST /books
 
 **Purpose:** Add a book to the global catalog.
 
-**Method:** `POST`  
+**Method:** `POST`
 **URL:** `http://localhost:3000/books`
 
 **Headers:**
@@ -171,7 +208,7 @@ Used on protected routes.
 ```txt
 Authorization: Bearer TOKEN
 Content-Type: application/json
-```
+````
 
 **Body:**
 
@@ -224,11 +261,15 @@ Content-Type: application/json
 ]
 ```
 
+---
+
 ## GET /books/:id
 
 **Purpose:** Return the public detail page for one book.
 
-**Method:** `GET`
+This route is public. It does not require a token.
+
+**Method:** `GET`  
 **URL:** `http://localhost:3000/books/BOOK_ID`
 
 **Headers:** none
@@ -242,7 +283,7 @@ Content-Type: application/json
 
 **Expected response example:**
 
-````json
+```json
 {
   "book": {
     "id": 1,
@@ -262,10 +303,62 @@ Content-Type: application/json
       "username": "testX",
       "status": "read",
       "recommendation": 1,
-      "comment": "J'ai beaucoup aime cette lecture."
+      "comment": "J'ai beaucoup aimé cette lecture."
     }
   ]
 }
+```
+
+### Stats Meaning
+
+- `recommended`: number of users who recommend the book
+- `notRecommended`: number of users who do not recommend the book
+- `totalRead`: number of users who marked the book as read
+- `totalInLibraries`: number of users who added the book to their library
+
+### Tests
+
+- [x] Existing book with comments and recommendations -> `200 OK`
+- [x] Existing book with no comments -> `200 OK` + `comments: []`
+- [x] Existing book not added to any user library -> `200 OK` + stats at `0`
+- [x] Invalid bookId, example `abc` -> `400 Identifiant du livre invalide`
+- [x] Unknown bookId, example `999999` -> `404 Livre introuvable`
+- [x] Route without token -> `200 OK`
+- [x] Response includes `book`
+- [x] Response includes `stats`
+- [x] Response includes `comments`
+
+### Verification
+
+For a book with comments and recommendations, check that:
+
+- `book` contains the book information
+- `stats.recommended` counts recommendations with value `1`
+- `stats.notRecommended` counts recommendations with value `0`
+- `stats.totalRead` counts users with status `read`
+- `stats.totalInLibraries` counts all users who added the book to their library
+- `comments` contains only rows with a non-null comment
+
+For a book that exists but is not in any user library, expected response:
+
+```json
+{
+  "book": {
+    "id": 2,
+    "title": "Example title",
+    "author": "Example author",
+    "type": "roman",
+    "genre": "fantasy"
+  },
+  "stats": {
+    "recommended": 0,
+    "notRecommended": 0,
+    "totalRead": 0,
+    "totalInLibraries": 0
+  },
+  "comments": []
+}
+```
 
 ---
 
@@ -290,7 +383,7 @@ Content-Type: application/json
 {
   "bookId": 1
 }
-````
+```
 
 **Success:**
 
@@ -484,3 +577,5 @@ GET http://localhost:3000/books
 ```
 
 Check that the book still exists in the global catalog.
+
+---

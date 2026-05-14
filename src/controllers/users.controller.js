@@ -209,3 +209,30 @@ export const removeBookFromMyLibrary = (req, res) => {
     },
   );
 };
+
+// Voir le profil d'un utilisateur en fonction de son id
+export const getUserById = (req, res) => {
+  const userId = Number(req.params.id);
+
+  if (!Number.isInteger(userId) || userId <= 0) {
+    return res.status(400).json({ error: "Identifiant utilisateur invalide" });
+  }
+
+  const query = `
+    SELECT id, username 
+    FROM users
+    WHERE id = ?
+  `;
+
+  db.get(query, [userId], (err, user) => {
+    if (err) {
+      return res.status(500).json({ error: "Erreur serveur" });
+    }
+
+    if (!user) {
+      return res.status(404).json({ error: "Utilisateur introuvable" });
+    }
+
+    return res.json(user);
+  });
+};

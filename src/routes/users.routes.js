@@ -5,6 +5,7 @@ import {
   getMyLibrary,
   updateBookInMyLibrary,
   removeBookFromMyLibrary,
+  getUserById,
 } from "../controllers/users.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
@@ -15,5 +16,6 @@ router.post("/me/books", authMiddleware, addBookToMyLibrary);
 router.get("/me/books", authMiddleware, getMyLibrary);
 router.patch("/me/books/:bookId", authMiddleware, updateBookInMyLibrary);
 router.delete("/me/books/:bookId", authMiddleware, removeBookFromMyLibrary);
+router.get("/:id", getUserById);
 
 export default router;
