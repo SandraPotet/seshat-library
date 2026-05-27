@@ -36,7 +36,7 @@ export const getAllBooks = (req, res) => {
   });
 };
 
-// Obtenir les information d'un livre en fonction de son id
+// Obtenir les informations d'un livre en fonction de son id
 export const getBookById = (req, res) => {
   const bookId = Number(req.params.id);
 

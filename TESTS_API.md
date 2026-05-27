@@ -192,6 +192,60 @@ This route is public. It does not require a token.
 - [x] Unknown userId, example `999999` -> `404 Utilisateur introuvable`
 - [x] Route without token -> `200 OK`
 
+---
+
+## GET /users/:id/books
+
+**Purpose:** Return a public user library.
+
+This route is public. It does not require a token.
+
+**Method:** `GET`  
+**URL:** `http://localhost:3000/users/USER_ID/books`  
+**Headers:** none  
+**Body:** none
+
+**Success:**
+
+- Status: `200 OK`
+- Response: public user library information
+
+**Expected response example:**
+
+```json
+{
+  "user": {
+    "id": 1,
+    "username": "test1"
+  },
+  "books": [
+    {
+      "id": 3,
+      "title": "Dune",
+      "author": "Frank Herbert",
+      "type": "roman",
+      "genre": "science-fiction",
+      "status": "read",
+      "recommendation": 1,
+      "comment": "Très bonne lecture."
+    }
+  ]
+}
+```
+
+### Tests
+
+- [x] Existing user with books -> `200 OK` + public user library
+- [x] Existing user with empty library -> `200 OK` + `books: []`
+- [x] Response includes `user`
+- [x] Response includes `books`
+- [x] Response does not include password
+- [x] Invalid userId, example `abc` -> `400 Identifiant utilisateur invalide`
+- [x] Invalid userId, example `0` -> `400 Identifiant utilisateur invalide`
+- [x] Invalid userId, example `-1` -> `400 Identifiant utilisateur invalide`
+- [x] Unknown userId, example `999999` -> `404 Utilisateur introuvable`
+- [x] Route without token -> `200 OK`
+
 ````
 
 # 5. Books
@@ -208,7 +262,7 @@ This route is public. It does not require a token.
 ```txt
 Authorization: Bearer TOKEN
 Content-Type: application/json
-````
+```
 
 **Body:**
 
@@ -239,7 +293,7 @@ Content-Type: application/json
 
 **Purpose:** Return all books from the global catalog.
 
-**Method:** `GET`  
+**Method:** `GET`
 **URL:** `http://localhost:3000/books`
 
 **Success:**
@@ -269,7 +323,7 @@ Content-Type: application/json
 
 This route is public. It does not require a token.
 
-**Method:** `GET`  
+**Method:** `GET`
 **URL:** `http://localhost:3000/books/BOOK_ID`
 
 **Headers:** none
@@ -416,8 +470,8 @@ For a book that exists but is not in any user library, expected response:
 
 **Purpose:** Return the current user's library.
 
-**Method:** `GET`  
-**URL:** `http://localhost:3000/users/me/books`  
+**Method:** `GET`
+**URL:** `http://localhost:3000/users/me/books`
 **Headers:** `Authorization: Bearer TOKEN`
 
 **Success:**
@@ -461,8 +515,8 @@ For a book that exists but is not in any user library, expected response:
 - Book must exist in the catalog.
 - Book must already be in the user's library.
 
-**Method:** `PATCH`  
-**URL:** `http://localhost:3000/users/me/books/BOOK_ID`  
+**Method:** `PATCH`
+**URL:** `http://localhost:3000/users/me/books/BOOK_ID`
 **Headers:** `Authorization: Bearer TOKEN`
 
 **Possible body:**
@@ -534,8 +588,8 @@ This route removes only the relation in `user_books`. It does not delete the boo
 - Book must exist in the catalog.
 - Book must already be in the user's library.
 
-**Method:** `DELETE`  
-**URL:** `http://localhost:3000/users/me/books/BOOK_ID`  
+**Method:** `DELETE`
+**URL:** `http://localhost:3000/users/me/books/BOOK_ID`
 **Headers:** `Authorization: Bearer TOKEN`
 
 **Body:** none
@@ -579,3 +633,4 @@ GET http://localhost:3000/books
 Check that the book still exists in the global catalog.
 
 ---
+````

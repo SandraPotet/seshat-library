@@ -236,3 +236,48 @@ export const getUserById = (req, res) => {
     return res.json(user);
   });
 };
+
+// Voir la bibliothèque de l'utilisateur en fonction de son id
+export const getUserLibraryById = (req, res) => {
+  const userId = Number(req.params.id);
+
+  if (!Number.isInteger(userId) || userId <= 0) {
+    return res.status(400).json({ error: "Identifiant utilisateur invalide" });
+  }
+
+  const query1 = `
+    SELECT id, username 
+    FROM users
+    WHERE id = ?
+  `;
+
+  db.get(query1, [userId], (err, user) => {
+    if (err) {
+      return res.status(500).json({ error: "Erreur serveur" });
+    }
+
+    if (!user) {
+      return res.status(404).json({ error: "Utilisateur introuvable" });
+    }
+
+    const query2 = `
+      SELECT books.id, books.title, books.author, books.type, books.genre, 
+        user_books.status, user_books.recommendation, user_books.comment
+      FROM user_books
+      JOIN books ON user_books.book_id = books.id
+      WHERE user_books.user_id = ?
+      ORDER BY user_books.id DESC
+    `;
+
+    db.all(query2, [userId], (err, books) => {
+      if (err) {
+        return res.status(500).json({ error: "Erreur serveur" });
+      }
+
+      return res.json({
+        user,
+        books,
+      });
+    });
+  });
+};
