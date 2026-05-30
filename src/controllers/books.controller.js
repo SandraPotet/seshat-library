@@ -4,21 +4,24 @@ import db from "../models/db.js";
 export const createBook = (req, res) => {
   const { title, author, type, genre } = req.body;
 
-  if (!title || !author) {
+  const cleanTitle = title?.trim();
+  const cleanAuthor = author?.trim();
+
+  if (!cleanTitle || !cleanAuthor) {
     return res.status(400).json({ error: "Title and author are required" });
   }
 
   const query = `INSERT INTO books (title, author, type, genre) VALUES (?, ?, ?, ?)`;
 
-  db.run(query, [title, author, type, genre], function (err) {
+  db.run(query, [cleanTitle, cleanAuthor, type, genre], function (err) {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
 
     res.status(201).json({
       id: this.lastID,
-      title,
-      author,
+      title: cleanTitle,
+      author: cleanAuthor,
       type,
       genre,
     });

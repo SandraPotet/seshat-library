@@ -246,8 +246,6 @@ This route is public. It does not require a token.
 - [x] Unknown userId, example `999999` -> `404 Utilisateur introuvable`
 - [x] Route without token -> `200 OK`
 
-````
-
 # 5. Books
 
 ## POST /books
@@ -283,6 +281,9 @@ Content-Type: application/json
 ### Tests
 
 - [x] Valid book with token -> `201 Created`
+- [x] Title and author with spaces around -> `201 Created` + response returns clean title and author
+- [x] Title with only spaces -> `400 Title and author are required`
+- [x] Author with only spaces -> `400 Title and author are required`
 - [x] Without token -> `401 Token manquant`
 - [x] Missing title -> `400 Title and author are required`
 - [x] Missing author -> `400 Title and author are required`
@@ -633,4 +634,3 @@ GET http://localhost:3000/books
 Check that the book still exists in the global catalog.
 
 ---
-````
