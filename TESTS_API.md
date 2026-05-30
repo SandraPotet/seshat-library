@@ -287,6 +287,11 @@ Content-Type: application/json
 - [x] Without token -> `401 Token manquant`
 - [x] Missing title -> `400 Title and author are required`
 - [x] Missing author -> `400 Title and author are required`
+- [x] Duplicate book with same title and same author -> `409 Ce livre est déjà dans le catalogue`
+- [x] Duplicate book with different letter case -> `409 Ce livre est déjà dans le catalogue`
+- [x] Duplicate book with spaces around title and author -> `409 Ce livre est déjà dans le catalogue`
+- [x] Same title with different author -> `201 Created`
+- [x] Different title with same author -> `201 Created`
 
 ---
 

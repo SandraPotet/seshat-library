@@ -11,19 +11,37 @@ export const createBook = (req, res) => {
     return res.status(400).json({ error: "Title and author are required" });
   }
 
-  const query = `INSERT INTO books (title, author, type, genre) VALUES (?, ?, ?, ?)`;
+  const duplicateQuery = `
+    SELECT id FROM books
+    WHERE LOWER(title) = LOWER(?)
+    AND LOWER(author) = LOWER(?)
+  `;
 
-  db.run(query, [cleanTitle, cleanAuthor, type, genre], function (err) {
+  db.get(duplicateQuery, [cleanTitle, cleanAuthor], (err, existingBook) => {
     if (err) {
-      return res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: "Erreur serveur" });
     }
 
-    res.status(201).json({
-      id: this.lastID,
-      title: cleanTitle,
-      author: cleanAuthor,
-      type,
-      genre,
+    if (existingBook) {
+      return res
+        .status(409)
+        .json({ error: "Ce livre est déjà dans le catalogue." });
+    }
+
+    const query = `INSERT INTO books (title, author, type, genre) VALUES (?, ?, ?, ?)`;
+
+    db.run(query, [cleanTitle, cleanAuthor, type, genre], function (err) {
+      if (err) {
+        return res.status(500).json({ error: "Erreur serveur" });
+      }
+
+      return res.status(201).json({
+        id: this.lastID,
+        title: cleanTitle,
+        author: cleanAuthor,
+        type,
+        genre,
+      });
     });
   });
 };
