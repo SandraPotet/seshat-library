@@ -55,13 +55,31 @@ export const addBookToMyLibrary = (req, res) => {
           return res.status(500).json({ error: "Erreur serveur" });
         }
 
-        res.status(201).json({
-          id: this.lastID,
-          userId,
-          bookId,
-          status: "to_read",
-          recommendation: null,
-          comment: null,
+        const userBookId = this.lastID;
+
+        const query = `
+  SELECT
+    books.id,
+    books.title,
+    books.author,
+    books.type,
+    books.genre,
+    user_books.status,
+    user_books.recommendation,
+    user_books.comment
+  FROM user_books
+  JOIN books ON user_books.book_id = books.id
+  WHERE user_books.id = ?
+`;
+
+        db.get(query, [userBookId], (err, book) => {
+          if (err) {
+            return res.status(500).json({ error: "Erreur serveur" });
+          }
+          return res.status(201).json({
+            message: "Livre ajouté dans votre bibliothèque.",
+            book,
+          });
         });
       },
     );

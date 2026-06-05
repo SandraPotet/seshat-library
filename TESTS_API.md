@@ -453,18 +453,23 @@ For a book that exists but is not in any user library, expected response:
 
 ```json
 {
-  "id": 1,
-  "userId": 1,
-  "bookId": 1,
-  "status": "to_read",
-  "recommendation": null,
-  "comment": null
+  "message": "Livre ajouté dans votre bibliothèque.",
+  "book": {
+    "id": 1,
+    "title": "Example title",
+    "author": "Example author",
+    "type": "roman",
+    "genre": "fantasy",
+    "status": "to_read",
+    "recommendation": null,
+    "comment": null
+  }
 }
 ```
 
 ### Tests
 
-- [x] Valid bookId -> `201 Created`
+- [x] Valid bookId -> `201 Created` + `book` object
 - [x] Without token -> `401 Token manquant`
 - [x] Missing bookId -> `400 Veuillez choisir un livre a ajouter a votre bibliotheque`
 - [x] Unknown bookId -> `404 Livre introuvable`
