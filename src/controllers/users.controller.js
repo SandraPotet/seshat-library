@@ -190,8 +190,27 @@ export const updateBookInMyLibrary = (req, res) => {
           return res.status(500).json({ error: "Erreur serveur" });
         }
 
-        return res.status(200).json({
-          message: "Livre mis a jour dans votre bibliotheque",
+        const query2 = `SELECT
+      books.id,
+      books.title,
+      books.author,
+      books.type,
+      books.genre,
+      user_books.status,
+      user_books.recommendation,
+      user_books.comment
+      FROM user_books JOIN books ON user_books.book_id = books.id
+      WHERE user_books.user_id = ? AND user_books.book_id = ? `;
+
+        db.get(query2, [userId, bookId], (err, book) => {
+          if (err) {
+            return res.status(500).json({ error: "Erreur serveur" });
+          }
+
+          return res.status(200).json({
+            message: "Livre mis a jour dans votre bibliotheque",
+            book,
+          });
         });
       });
     },

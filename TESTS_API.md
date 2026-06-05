@@ -554,19 +554,30 @@ For a book that exists but is not in any user library, expected response:
 
 ```json
 {
-  "message": "Livre mis a jour dans votre bibliotheque"
+  "message": "Livre mis a jour dans votre bibliotheque",
+  "book": {
+    "id": 1,
+    "title": "Example title",
+    "author": "Example author",
+    "type": "roman",
+    "genre": "fantasy",
+    "status": "reading",
+    "recommendation": 0,
+    "comment": "J'ai beaucoup aime cette lecture."
+  }
 }
 ```
 
 ### Tests
 
-- [x] Valid status update -> `200 OK`
+- [x] Valid status update -> `200 OK` + `book` object
 - [x] Valid recommendation `1` -> `200 OK`
 - [x] Valid recommendation `0` -> `200 OK`
 - [x] Valid recommendation `null` -> `200 OK`
 - [x] Valid comment -> `200 OK`
 - [x] Comment `null` -> `200 OK`
 - [x] Multiple fields at once -> `200 OK`
+- [x] Response includes updated `book` object
 - [x] Without token -> `401 Token manquant`
 - [x] Invalid bookId, example `abc` -> `400 Identifiant du livre invalide`
 - [x] Book not in my library -> `404 Ce livre n'est pas dans votre bibliotheque`
