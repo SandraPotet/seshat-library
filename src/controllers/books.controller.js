@@ -8,7 +8,7 @@ export const createBook = (req, res) => {
   const cleanAuthor = author?.trim();
 
   if (!cleanTitle || !cleanAuthor) {
-    return res.status(400).json({ error: "Title and author are required" });
+    return res.status(400).json({ error: "Titre et auteur requis" });
   }
 
   const duplicateQuery = `
@@ -51,7 +51,7 @@ export const getAllBooks = (req, res) => {
   const query = `SELECT * FROM books`;
   db.all(query, [], (err, rows) => {
     if (err) {
-      return res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: "Erreur serveur" });
     }
     res.json(rows);
   });

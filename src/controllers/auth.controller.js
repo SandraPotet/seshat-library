@@ -70,7 +70,8 @@ export const login = async (req, res) => {
         return res.status(500).json({ error: "Erreur serveur" });
       }
 
-      if (!user) return res.status(404).json({ error: "Introuvable" });
+      if (!user)
+        return res.status(404).json({ error: "Utilisateur introuvable" });
 
       const match = await bcrypt.compare(password, user.password);
 

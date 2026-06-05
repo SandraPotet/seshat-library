@@ -98,7 +98,7 @@ Seshat API is running
 
 - [x] Valid login -> `200 OK` + token
 - [x] Wrong password -> `401 Mot de passe incorrect`
-- [x] Unknown user -> `404 Introuvable`
+- [x] Unknown user -> `404 Utilisateur introuvable`
 - [x] Username with spaces around -> `200 OK` + token
 - [x] Missing username -> `400 Champ requis`
 - [x] Missing password -> `400 Champ requis`
@@ -282,11 +282,11 @@ Content-Type: application/json
 
 - [x] Valid book with token -> `201 Created`
 - [x] Title and author with spaces around -> `201 Created` + response returns clean title and author
-- [x] Title with only spaces -> `400 Title and author are required`
-- [x] Author with only spaces -> `400 Title and author are required`
+- [x] Title with only spaces -> `400 Titre et auteur requis`
+- [x] Author with only spaces -> `400 Titre et auteur requis`
 - [x] Without token -> `401 Token manquant`
-- [x] Missing title -> `400 Title and author are required`
-- [x] Missing author -> `400 Title and author are required`
+- [x] Missing title -> `400 Titre et auteur requis`
+- [x] Missing author -> `400 Titre et auteur requis`
 - [x] Duplicate book with same title and same author -> `409 Ce livre est déjà dans le catalogue`
 - [x] Duplicate book with different letter case -> `409 Ce livre est déjà dans le catalogue`
 - [x] Duplicate book with spaces around title and author -> `409 Ce livre est déjà dans le catalogue`
