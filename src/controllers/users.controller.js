@@ -242,6 +242,7 @@ export const removeBookFromMyLibrary = (req, res) => {
 
       return res.status(200).json({
         message: "Livre retire de votre bibliotheque",
+        bookId,
       });
     },
   );

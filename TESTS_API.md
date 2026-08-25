@@ -578,7 +578,7 @@ For a book that exists but is not in any user library, expected response:
 - [x] Comment `null` -> `200 OK`
 - [x] Multiple fields at once -> `200 OK`
 - [x] Response includes updated `book` object
-- [x] Without token -> `401 Token manquant`
+- [x] Without token -> `401 Token manquant`git
 - [x] Invalid bookId, example `abc` -> `400 Identifiant du livre invalide`
 - [x] Book not in my library -> `404 Ce livre n'est pas dans votre bibliotheque`
 - [x] Empty body `{}` -> `400 Veuillez fournir au moins une information a modifier`
@@ -624,7 +624,8 @@ This route removes only the relation in `user_books`. It does not delete the boo
 
 ```json
 {
-  "message": "Livre retire de votre bibliotheque"
+  "message": "Livre retire de votre bibliotheque",
+  "bookId": 1
 }
 ```
 
@@ -635,6 +636,7 @@ This route removes only the relation in `user_books`. It does not delete the boo
 - [x] Invalid bookId, example `abc` -> `400 Identifiant du livre invalide`
 - [x] Book not in my library -> `404 Ce livre n'est pas dans votre bibliotheque`
 - [x] Delete the same book twice -> `404 Ce livre n'est pas dans votre bibliotheque`
+- [x] Response includes removed `bookId`
 
 ### Verification
 
